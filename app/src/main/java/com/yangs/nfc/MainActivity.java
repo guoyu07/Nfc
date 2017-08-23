@@ -1,6 +1,8 @@
 package com.yangs.nfc;
 
 import android.app.PendingIntent;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
@@ -8,16 +10,21 @@ import android.nfc.Tag;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
+        , DBFragment.OnRefreshDBListener, Toolbar.OnMenuItemClickListener, SearchView.OnQueryTextListener {
     private FragmentManager fm;
     private Toolbar toolbar;
     private LinearLayout tab_ly_1;
@@ -34,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MyFragment myFragment;
     private NfcAdapter mNfcAdapter;
     private PendingIntent pi;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
-            AppApplication.showToast("设备不支持NFC,功能将无法正常使用!", 1);
+            AppApplication.showToast(this, "设备不支持NFC,功能将无法正常使用!");
         }
         initView();
         switchFragment(1);
@@ -52,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("NFC");
         setSupportActionBar(toolbar);
+        toolbar.setOnMenuItemClickListener(this);
         tab_ly_1 = (LinearLayout) findViewById(R.id.tab_ly_1);
         tab_ly_2 = (LinearLayout) findViewById(R.id.tab_ly_2);
         tab_ly_3 = (LinearLayout) findViewById(R.id.tab_ly_3);
@@ -64,6 +73,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tab_ly_1.setOnClickListener(this);
         tab_ly_2.setOnClickListener(this);
         tab_ly_3.setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.toolbar_search);
+        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);//加载searchview
+        searchView.setOnQueryTextListener(this);//为搜索框设置监听事件
+        searchView.setQueryHint("按枪身号查找");//设置提示信息
+        return true;
     }
 
     @Override
@@ -152,14 +171,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     bundle.putParcelableArray("ndef", intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES));
                     break;
             }
+            AppApplication.showToast(this, "发现新卡片");
             bundle.putParcelable("tag", intent.getParcelableExtra(NfcAdapter.EXTRA_TAG));
             FragmentTransaction transaction = fm.beginTransaction();
             if (rwFragment != null)
                 transaction.hide(rwFragment);
+            if (dbFragment != null)
+                transaction.hide(dbFragment);
+            if (myFragment != null)
+                transaction.hide(myFragment);
+            tab_iv_1.setImageResource(R.drawable.ic_local_offer_press_24dp);
+            tab_tv_1.setTextColor(getResources().getColor(R.color.colorPrimary));
+            tab_iv_2.setImageResource(R.drawable.ic_data_usage_24dp);
+            tab_tv_2.setTextColor(getResources().getColor(R.color.gray));
+            tab_iv_3.setImageResource(R.drawable.ic_settings_24dp);
+            tab_tv_3.setTextColor(getResources().getColor(R.color.gray));
             rwFragment = new RWFragment();
             rwFragment.setArguments(bundle);
             transaction.add(R.id.frame, rwFragment);
             transaction.commitAllowingStateLoss();
         }
+    }
+
+    @Override
+    public void refreshDB() {
+        if (rwFragment != null && rwFragment.isLoad)
+            rwFragment.searchDB();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.toolbar_search:
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        AppApplication.sql = "select * from Info where 枪身号='" + query + "';";
+        switchFragment(2);
+        if (dbFragment.lRecyclerView != null && dbFragment.isLoad)
+            dbFragment.lRecyclerView.refresh();
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }

@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         app:subtitleTextColor="@color/white"
+        app:theme="@style/ToolbarTheme"
         app:titleTextColor="@color/white" />
 
     <FrameLayout
