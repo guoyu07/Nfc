@@ -89,12 +89,30 @@ public class DBFragment extends LazyLoadFragment implements OnItemClickListener,
     @Override
     public void onItemClick(View view, final int position) {
         final DB db = list.get(position);
+        String his_gldw = "";
+        String[] a = db.getGldw().split(",");
+        for (int i = 1; i < a.length; i++) {
+            if (his_gldw.equals(""))
+                his_gldw = a[i];
+            else
+                his_gldw = his_gldw + "," + a[i];
+        }
+        String his_zrr = "";
+        String[] b = db.getZrr().split(",");
+        for (int i = 1; i < b.length; i++) {
+            if (his_zrr.equals(""))
+                his_zrr = b[i];
+            else
+                his_zrr = his_zrr + "," + b[i];
+        }
         new AlertDialog.Builder(getContext()).setTitle("详细").setCancelable(true)
                 .setMessage("型号: " + db.getXh() + "\n" +
                         "枪身号: " + db.getQsh() + "\n" +
                         "枪机号: " + db.getQjh() + "\n" +
-                        "管理单位: " + db.getGldw() + "\n" +
-                        "责任人: " + db.getZrr() + "\n" +
+                        "管理单位: " + db.getGldw().split(",")[0] + "\n" +
+                        "历史管理单位: " + his_gldw + "\n" +
+                        "责任人: " + db.getZrr().split(",")[0] + "\n" +
+                        "历史责任人: " + his_zrr + "\n" +
                         "完好情况: " + db.getWaqk()).setPositiveButton("修改", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -167,47 +185,41 @@ public class DBFragment extends LazyLoadFragment implements OnItemClickListener,
     public void onRefresh() {
         if (lRecyclerView == null)
             lRecyclerView = (LRecyclerView) mLay.findViewById(R.id.db_frag_lr);
-        //考虑到加载速度过快,暂停1秒后执行,使动画正常
-        lRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Cursor cursor = null;
-                try {
-                    cursor = AppApplication.db.rawQuery(AppApplication.sql, null);
-                    if (cursor.moveToFirst()) {
-                        dataAdapter.getList().clear();
-                        do {
-                            String mxh = cursor.getString(2);
-                            String mqsh = cursor.getString(0);
-                            String mqjh = cursor.getString(1);
-                            String mgldw = cursor.getString(3);
-                            String mzrr = cursor.getString(4);
-                            String mwaqk = cursor.getString(5);
-                            DB db = new DB();
-                            db.setXh(mxh);
-                            db.setQsh(mqsh);
-                            db.setQjh(mqjh);
-                            db.setGldw(mgldw);
-                            db.setZrr(mzrr);
-                            db.setWaqk(mwaqk);
-                            list.add(db);
-                        } while (cursor.moveToNext());
-                    }
-                } catch (Exception e) {
-                    AppApplication.showToast(getContext(), e.toString());
-                } finally {
-                    if (cursor != null)
-                        cursor.close();
-                }
-                lRecyclerView.refreshComplete(10);
-                lRecyclerViewAdapter.notifyDataSetChanged();
-                if (list.size() == 0)
-                    AppApplication.showToast(getContext(), "数据库中还没有记录");
-                else
-                    AppApplication.showToast(getContext(), "数据库中有" + list.size() + "条记录");
-                AppApplication.sql = "select * from Info";
+        Cursor cursor = null;
+        try {
+            dataAdapter.getList().clear();
+            cursor = AppApplication.db.rawQuery(AppApplication.sql, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    String mxh = cursor.getString(2);
+                    String mqsh = cursor.getString(0);
+                    String mqjh = cursor.getString(1);
+                    String mgldw = cursor.getString(3);
+                    String mzrr = cursor.getString(4);
+                    String mwaqk = cursor.getString(5);
+                    DB db = new DB();
+                    db.setXh(mxh);
+                    db.setQsh(mqsh);
+                    db.setQjh(mqjh);
+                    db.setGldw(mgldw);
+                    db.setZrr(mzrr);
+                    db.setWaqk(mwaqk);
+                    list.add(db);
+                } while (cursor.moveToNext());
             }
-        }, 1000);
+        } catch (Exception e) {
+            AppApplication.showToast(getContext(), e.toString());
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        lRecyclerView.refreshComplete(10);
+        lRecyclerViewAdapter.notifyDataSetChanged();
+        if (list.size() == 0)
+            AppApplication.showToast(getContext(), "数据库中没有记录");
+        else
+            AppApplication.showToast(getContext(), "数据库中有" + list.size() + "条记录");
+        AppApplication.sql = "select * from Info";
     }
 
     public interface OnRefreshDBListener {

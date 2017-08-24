@@ -99,7 +99,7 @@ public class AppApplication extends Application {
                 ndefTag.connect();
                 ndefTag.writeNdefMessage(ndefMessage);
                 ndefTag.close();
-                AppApplication.showToast(context, "Success,请重新放置卡片");
+                AppApplication.showToast(context, "操作成功,请重新放置卡片");
                 return 0;
             } catch (IOException e) {
                 AppApplication.showToast(context, "I/O 错误,请重新放置卡片");

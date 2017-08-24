@@ -147,8 +147,7 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                 }
                 String[] payloads = content.split(";");
                 if (payloads.length != 6) {
-                    AppApplication.showToast(getContext(), "数据格式有误 : size = " + payloads.length);
-                    tv_cardinfo.append("payload: \n" + new String(ndefRecord.getPayload()));
+                    tv_cardinfo.append("空的卡片 \n" + new String(ndefRecord.getPayload()));
                     return;
                 }
                 this.xh = payloads[0];
@@ -204,7 +203,7 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                         "完好情况: " + mwaqk + "\n");
                 msg = mxh + ";" + mqsh + ";" + mqjh + ";" + mgldw + ";" + mzrr + ";" + mwaqk;
             } while (cursor.moveToNext());
-            bt_apply.setText("更新数据库");
+            bt_apply.setText("同步到数据库");
         } catch (Exception e) {
             if (tv_dbinfo == null)
                 tv_dbinfo = (TextView) mLay.findViewById(R.id.rw_frag_tv_dbinfo);
@@ -255,9 +254,17 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                 }).create().show();
                 break;
             case R.id.rw_frag_bt_reset:
-                if (tag != null)
-                    AppApplication.writeTag(getContext(), tag, "");
-                else
+                if (tag != null) {
+                    new AlertDialog.Builder(getContext()).setTitle("提示").setCancelable(true)
+                            .setMessage("将会擦除卡片内的数据,是否继续?")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    AppApplication.writeTag(getContext(), tag, "");
+                                    dialog.dismiss();
+                                }
+                            }).create().show();
+                } else
                     AppApplication.showToast(getContext(), "没有检测到卡片");
                 break;
             case R.id.rw_frag_bt_apply:
@@ -277,12 +284,20 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                     AppApplication.showToast(getContext(), "没有检测到卡片");
                     return;
                 }
-                String msg = searchDB();
+                final String msg = searchDB();
                 if (msg.equals("")) {
                     AppApplication.showToast(getContext(), "数据库中没有记录");
                     return;
                 }
-                AppApplication.writeTag(getContext(), tag, msg);
+                new AlertDialog.Builder(getContext()).setTitle("提示").setCancelable(true)
+                        .setMessage("数据库中的数据会同步到卡片内,卡片里的数据将被重写,是否继续?")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AppApplication.writeTag(getContext(), tag, msg);
+                                dialog.dismiss();
+                            }
+                        }).create().show();
                 break;
         }
     }
