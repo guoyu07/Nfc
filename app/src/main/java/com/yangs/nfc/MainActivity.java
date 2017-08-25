@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onQueryTextSubmit(String query) {
         AppApplication.sql = "select * from Info where 枪身号='" + query + "';";
         switchFragment(2);
-        if (dbFragment.lRecyclerView != null && dbFragment.isLoad)
+        if (dbFragment.lRecyclerView != null && dbFragment.isInit)
             dbFragment.lRecyclerView.refresh();
         return true;
     }

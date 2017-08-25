@@ -83,6 +83,7 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
     private String gldw;     //管理单位
     private String zrr;      //责任人
     private String waqk;     //完好情况
+    private String time;    //更新时间
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,7 +162,7 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                         "枪机号: " + qjh + "\n" +
                         "管理单位: " + gldw + "\n" +
                         "责任人: " + zrr + "\n" +
-                        "完好情况: " + waqk + "\n");
+                        "完好情况: " + waqk);
                 searchDB();
             } else {
                 AppApplication.showToast(getContext(), "卡片数据格式不支持读取");
@@ -187,6 +188,7 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                 String mgldw = cursor.getString(3).split(",")[0];
                 String mzrr = cursor.getString(4).split(",")[0];
                 String mwaqk = cursor.getString(5);
+                String mtime = cursor.getString(6);
                 if (mxh.equals(this.xh) && mqsh.equals(this.qsh) && mqjh.equals(this.qjh) &&
                         mgldw.equals(this.gldw) && mzrr.equals(this.zrr) && mwaqk.equals(this.waqk)) {
                     tv_t.setText("数据库中的信息  (一致)");
@@ -200,13 +202,16 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                         "枪机号: " + mqjh + "\n" +
                         "管理单位: " + mgldw + "\n" +
                         "责任人: " + mzrr + "\n" +
-                        "完好情况: " + mwaqk + "\n");
+                        "完好情况: " + mwaqk + "\n" +
+                        "更新时间: " + mtime);
                 msg = mxh + ";" + mqsh + ";" + mqjh + ";" + mgldw + ";" + mzrr + ";" + mwaqk;
             } while (cursor.moveToNext());
             bt_apply.setText("同步到数据库");
         } catch (Exception e) {
             if (tv_dbinfo == null)
                 tv_dbinfo = (TextView) mLay.findViewById(R.id.rw_frag_tv_dbinfo);
+            if (bt_apply == null)
+                bt_apply = (Button) mLay.findViewById(R.id.rw_frag_bt_apply);
             tv_dbinfo.setText("数据库中没有信息");
             bt_apply.setText("添加到数据库");
         } finally {
@@ -243,7 +248,7 @@ public class RWFragment extends LazyLoadFragment implements View.OnClickListener
                                 edit_dialog_et_5.getText().toString().trim() + ";" +
                                 edit_dialog_et_6.getText().toString().trim();
                         if (AppApplication.writeTag(getActivity(), tag, text) == 0) {
-                            //dialog.dismiss();
+                            dialog.dismiss();
                         }
                     }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {

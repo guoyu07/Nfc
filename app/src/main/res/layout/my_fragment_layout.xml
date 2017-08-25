@@ -4,11 +4,67 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="设置"
-        android:textColor="@color/colorPrimary"
-        android:textSize="40sp" />
+        android:orientation="vertical">
+
+        <LinearLayout style="@style/wrap_layout">
+
+            <LinearLayout
+                android:id="@+id/my_ll_info"
+                style="@style/single_layout">
+
+                <TextView
+                    style="@style/usertext"
+                    android:text="个人资料" />
+
+                <ImageView style="@style/img_arrow" />
+            </LinearLayout>
+
+            <View style="@style/bg_line" />
+
+            <LinearLayout
+                android:id="@+id/my_ll_add"
+                style="@style/mid_layout">
+
+                <TextView
+                    style="@style/usertext"
+                    android:text="添加数据" />
+
+                <ImageView style="@style/img_arrow" />
+            </LinearLayout>
+
+            <View style="@style/bg_line" />
+
+            <LinearLayout
+                android:id="@+id/my_ll_reset"
+                style="@style/bottom_layout">
+
+                <TextView
+                    style="@style/usertext"
+                    android:text="清空数据库" />
+
+                <ImageView style="@style/img_arrow" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/wrap_layout">
+            <!-- 上圆角-->
+            <LinearLayout
+                android:id="@+id/my_ll_about"
+                style="@style/bottom_layout">
+
+                <TextView
+                    style="@style/usertext"
+                    android:text="关于" />
+
+                <ImageView style="@style/img_arrow" />
+            </LinearLayout>
+            <!-- 分割线 -->
+            <View style="@style/bg_line" />
+
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

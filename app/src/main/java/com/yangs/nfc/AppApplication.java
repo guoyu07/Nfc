@@ -3,6 +3,7 @@ package com.yangs.nfc;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,6 +19,8 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -28,13 +31,15 @@ public class AppApplication extends Application {
 
     public static SQLiteDatabase db;
     public static String sql = "select * from Info";
+    public static SharedPreferences save;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        save = getSharedPreferences("main", MODE_PRIVATE);
         db = getApplicationContext().openOrCreateDatabase("info.db", Context.MODE_PRIVATE, null);
         db.execSQL("create table if not exists Info(枪身号 TEXT PRIMARY KEY,枪机号 TEXT,型号 TEXT" +
-                ",管理单位 TEXT,责任人 TEXT,完好情况 TEXT);");
+                ",管理单位 TEXT,责任人 TEXT,完好情况 TEXT,更新时间 TEXT);");
     }
 
     public static void showToast(Context context, String msg) {
@@ -71,6 +76,8 @@ public class AppApplication extends Application {
             cv.put("管理单位", t_gldw);
             cv.put("责任人", t_zrr);
             cv.put("完好情况", waqk);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            cv.put("更新时间", df.format(new Date()));
             AppApplication.db.replace("Info", null, cv);
             AppApplication.showToast(context, "Success");
             return 0;

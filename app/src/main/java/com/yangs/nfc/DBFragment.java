@@ -113,7 +113,8 @@ public class DBFragment extends LazyLoadFragment implements OnItemClickListener,
                         "历史管理单位: " + his_gldw + "\n" +
                         "责任人: " + db.getZrr().split(",")[0] + "\n" +
                         "历史责任人: " + his_zrr + "\n" +
-                        "完好情况: " + db.getWaqk()).setPositiveButton("修改", new DialogInterface.OnClickListener() {
+                        "完好情况: " + db.getWaqk() + "\n" +
+                        "更新时间: " + db.getTime()).setPositiveButton("修改", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -197,6 +198,7 @@ public class DBFragment extends LazyLoadFragment implements OnItemClickListener,
                     String mgldw = cursor.getString(3);
                     String mzrr = cursor.getString(4);
                     String mwaqk = cursor.getString(5);
+                    String mtime = cursor.getString(6);
                     DB db = new DB();
                     db.setXh(mxh);
                     db.setQsh(mqsh);
@@ -204,6 +206,7 @@ public class DBFragment extends LazyLoadFragment implements OnItemClickListener,
                     db.setGldw(mgldw);
                     db.setZrr(mzrr);
                     db.setWaqk(mwaqk);
+                    db.setTime(mtime);
                     list.add(db);
                 } while (cursor.moveToNext());
             }

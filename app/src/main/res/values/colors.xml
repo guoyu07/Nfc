@@ -8,4 +8,12 @@
     <color name="gray2">#d1cccc</color>
     <color name="green">#00ff00</color>
     <color name="red">#ff0000</color>
+    <color name="border_clo">#ccc</color>
+    <color name="color_00">#8A000000</color>
+    <color name="text_clo">#333</color>
+    <color name="blue">#419de4</color>
+    <color name="colorDisableHintIcon">#71000000</color>
+    <color name="gallery_blue">#4758b3</color>
+    <color name="split">#000000</color>
+    <color name="tab">#90d7ec</color>
 </resources>
