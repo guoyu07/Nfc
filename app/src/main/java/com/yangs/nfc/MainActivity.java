@@ -79,9 +79,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         MenuItem menuItem = menu.findItem(R.id.toolbar_search);
-        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);//加载searchview
-        searchView.setOnQueryTextListener(this);//为搜索框设置监听事件
-        searchView.setQueryHint("按枪身号查找");//设置提示信息
+        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(this);
+        searchView.setQueryHint("按枪身号查找");
         return true;
     }
 
